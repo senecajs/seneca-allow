@@ -1,2 +1,3 @@
-# seneca-gateway
-Handle incoming messages within other frameworks.
+# seneca-allow
+Allow messages to proceed if they meet certain criteria.
+
