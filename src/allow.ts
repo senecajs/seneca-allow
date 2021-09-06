@@ -14,19 +14,14 @@ function allow(this: any, options: any) {
   let keypaths: string[] = []
   for (let i = 0; i < checkpats.length; i++) {
     let pat = Jsonic(checkpats[i])
-    // console.log(checkpats[i], pat)
     allowed.add(pat, true)
     keypaths = keypaths.concat(Object.keys(pat))
   }
-
-  // console.log(''+allowed)
-
 
   let wraps: any[] = options.wrap
 
   for (let i = 0; i < wraps.length; i++) {
     let wrap = Jsonic(wraps[i])
-    // console.log(wraps[i], wrap)
     seneca.wrap(wrap, allowCheck)
   }
 
@@ -45,14 +40,12 @@ function allow(this: any, options: any) {
     let candidate: any = {}
     for (let keypath of keypaths) {
       if (keypath.startsWith('custom$.')) {
-        // console.log('META', meta.custom)
         candidate[keypath] = Hoek.reach(meta.custom, keypath.substring(8))
       }
       else {
         candidate[keypath] = Hoek.reach(msg, keypath)
       }
     }
-    console.log('C', candidate)
     let result = allowed.find(candidate)
     return !!result
   }
