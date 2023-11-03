@@ -1,4 +1,4 @@
-/* Copyright © 2021 Richard Rodger, MIT License. */
+/* Copyright © 2021-2023 Richard Rodger, MIT License. */
 
 
 import Hoek from '@hapi/hoek'
@@ -20,6 +20,17 @@ function allow(this: any, options: any) {
 
   let wraps: any[] = options.wrap
 
+  if (options.debug) {
+    console.log('ALLOW-CHECK')
+    console.dir(checkpats, { depth: null })
+    console.log('ALLOW-KEYPATHS')
+    console.dir(keypaths, { depth: null })
+    console.log('ALLOW-WRAPS')
+    console.dir(wraps, { depth: null })
+    console.log('ALLOW-PATRUN')
+    console.log(allowed.toString())
+  }
+
   for (let i = 0; i < wraps.length; i++) {
     let wrap = Jsonic(wraps[i])
     seneca.wrap(wrap, allowCheck)
@@ -31,6 +42,9 @@ function allow(this: any, options: any) {
       return this.prior(msg, done)
     }
     else {
+      if (options.debug) {
+        console.log('ALLOW-NOT', meta, msg)
+      }
       return seneca.fail('not_allowed')
     }
   }
@@ -47,6 +61,9 @@ function allow(this: any, options: any) {
       }
     }
     let result = allowed.find(candidate)
+    if (options.debug) {
+      console.log('ALLOW-CANDIDATE', candidate, result, meta, msg)
+    }
     return !!result
   }
 
@@ -64,6 +81,7 @@ function allow(this: any, options: any) {
 allow.defaults = {
   check: [],
   wrap: [],
+  debug: false,
 }
 
 

@@ -153,5 +153,27 @@ b=2, c=3 -> <true>`.trim())
   })
 
 
+  test('debug', async () => {
+    const seneca = Seneca({ legacy: false })
+      .test()
+      .quiet()
+      .use('promisify')
+      .use(Allow, {
+        debug: true,
+        check: [
+          { a: 1 },
+        ],
+        wrap: [
+          { x: 1 },
+        ]
+      })
+      .message('x:1', async (m: any) => ({ k: 11, a: m.a, b: m.b, c: m.c, }))
+
+    await seneca.ready()
+
+    expect(await seneca.post('x:1,a:1')).toEqual({ k: 11, a: 1 })
+    await expect(seneca.post('x:1,a:2')).rejects.toThrow('not_allowed')
+  })
+
 })
 
