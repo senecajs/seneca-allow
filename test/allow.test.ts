@@ -1,9 +1,11 @@
 
+
 import Allow from '../src/allow'
 
-const Seneca = require('seneca')
-const SenecaMsgTest = require('seneca-msg-test')
-const AllowMessages = require('./allow.messages').default
+import Seneca from 'seneca'
+import SenecaMsgTest from 'seneca-msg-test'
+
+import AllowMessages from './allow.messages'
 
 
 
@@ -19,6 +21,7 @@ describe('allow', () => {
     await (SenecaMsgTest(seneca, AllowMessages)())
   })
 
+
   test('allow', async () => {
     const seneca = Seneca({ legacy: false })
       .test()
@@ -31,12 +34,12 @@ describe('allow', () => {
       })
     await seneca.ready()
 
-    const allowed = seneca.export('allow/allowed')
+    const allowed = seneca.export('Allow/allowed')
     expect('' + allowed).toEqual(`
 a=1 -> <true>
 b=2, c=3 -> <true>`.trim())
 
-    const check = seneca.export('allow/check')
+    const check = seneca.export('Allow/check')
 
     expect(check(allowed, { a: 1 }, {})).toBe(true)
     expect(check(allowed, { a: 2 }, {})).toBe(false)

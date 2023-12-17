@@ -4,7 +4,26 @@
 import Hoek from '@hapi/hoek'
 
 
-function allow(this: any, options: any) {
+
+type Options = {
+  debug: boolean
+  check: any[],
+  wrap: any[],
+}
+
+// Default options.
+const defaults = {
+  check: [],
+  wrap: [],
+  debug: false,
+}
+
+
+export type AllowOptions = Partial<Options>
+
+
+
+function Allow(this: any, options: any) {
   const seneca: any = this
   const Patrun = seneca.util.Patrun
   const Jsonic = seneca.util.Jsonic
@@ -77,19 +96,14 @@ function allow(this: any, options: any) {
 }
 
 
-// Default options.
-allow.defaults = {
-  check: [],
-  wrap: [],
-  debug: false,
-}
 
+Object.assign(Allow, { defaults })
 
-export default allow
+// Prevent name mangling
+Object.defineProperty(Allow, 'name', { value: 'Allow' })
 
+export default Allow
 
-
-
-if ('undefined' !== typeof (module)) {
-  module.exports = allow
+if ('undefined' !== typeof module) {
+  module.exports = Allow
 }
