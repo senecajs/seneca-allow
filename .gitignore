@@ -80,7 +80,7 @@ typings/
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+# dist is committed: the release publishes the committed files.
 
 # Gatsby files
 .cache/

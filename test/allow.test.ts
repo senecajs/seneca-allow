@@ -12,12 +12,12 @@ import AllowMessages from './allow.messages'
 describe('allow', () => {
 
   test('happy', async () => {
-    const seneca = Seneca({ legacy: false }).test().use('promisify').use(Allow)
+    const seneca = Seneca({ legacy: false }).test().use(Allow)
     await seneca.ready()
   })
 
   test('messages', async () => {
-    const seneca = Seneca({ legacy: false }).test().use('promisify').use(Allow)
+    const seneca = Seneca({ legacy: false }).test().use(Allow)
     await (SenecaMsgTest(seneca, AllowMessages)())
   })
 
@@ -25,7 +25,6 @@ describe('allow', () => {
   test('allow', async () => {
     const seneca = Seneca({ legacy: false })
       .test()
-      .use('promisify')
       .use(Allow, {
         check: [
           { a: 1 },
@@ -53,7 +52,6 @@ b=2, c=3 -> <true>`.trim())
   test('wrap', async () => {
     const seneca = Seneca({ legacy: false, log: 'silent' })
       // .test() 
-      .use('promisify')
       .use(Allow, {
         check: [
           { a: 1 },
@@ -73,7 +71,7 @@ b=2, c=3 -> <true>`.trim())
 
 
     expect(await seneca.post('x:1,a:1')).toEqual({ k: 11, a: 1 })
-    await expect(seneca.post('x:1,a:2')).rejects.toThrow('not_allowed')
+    await expect(seneca.post('x:1,a:2')).rejects.toMatchObject({ code: 'not_allowed' })
 
     expect(await seneca.post('y:2,a:1')).toEqual({ k: 22, a: 1 })
     expect(await seneca.post('y:2,b:2,c:3'))
@@ -88,7 +86,6 @@ b=2, c=3 -> <true>`.trim())
   test('wrap-path', async () => {
     const seneca = Seneca({ legacy: false, log: 'silent' })
       // .test()
-      .use('promisify')
       .use(Allow, {
         check: [
           '"a.b":1,"c.d.e":2',
@@ -104,7 +101,7 @@ b=2, c=3 -> <true>`.trim())
     expect(await seneca.post('x:1,a:{b:1},c:{d:{e:2}}'))
       .toEqual({ k: 11, a: { b: 1 }, c: { d: { e: 2 } } })
     await expect(seneca.post('x:1,a:{b:1},c:{d:{e:3}}'))
-      .rejects.toThrow('not_allowed')
+      .rejects.toMatchObject({ code: 'not_allowed' })
 
     expect(await seneca.post('y:2,a:{b:1},c:{d:{e:2}}'))
       .toEqual({ k: 22, a: { b: 1 }, c: { d: { e: 2 } } })
@@ -116,7 +113,6 @@ b=2, c=3 -> <true>`.trim())
   test('wrap-custom', async () => {
     const seneca = Seneca({ legacy: false, log: 'silent' })
       // .test()
-      .use('promisify')
       .use(Allow, {
         check: [
           '"a.b":1,"c.d.e":2,"custom$.foo":9',
@@ -136,16 +132,16 @@ b=2, c=3 -> <true>`.trim())
       .toEqual({ k: 11, a: { b: 1 }, c: { d: { e: 2 } } })
 
     await expect(delegate.post('x:1,a:{b:1},c:{d:{e:3}}'))
-      .rejects.toThrow('not_allowed')
+      .rejects.toMatchObject({ code: 'not_allowed' })
 
     await expect(seneca.post('x:1,a:{b:1},c:{d:{e:2}}'))
-      .rejects.toThrow('not_allowed')
+      .rejects.toMatchObject({ code: 'not_allowed' })
     await expect(seneca.post('x:1,a:{b:1},c:{d:{e:3}}'))
-      .rejects.toThrow('not_allowed')
+      .rejects.toMatchObject({ code: 'not_allowed' })
 
     let denied = seneca.delegate({}, { custom: { foo: 8 } })
     await expect(denied.post('x:1,a:{b:1},c:{d:{e:2}}', { custom$: { foo: 9 } }))
-      .rejects.toThrow('not_allowed')
+      .rejects.toMatchObject({ code: 'not_allowed' })
 
 
 
@@ -160,7 +156,6 @@ b=2, c=3 -> <true>`.trim())
     const seneca = Seneca({ legacy: false })
       .test()
       .quiet()
-      .use('promisify')
       .use(Allow, {
         debug: true,
         check: [
@@ -175,7 +170,7 @@ b=2, c=3 -> <true>`.trim())
     await seneca.ready()
 
     expect(await seneca.post('x:1,a:1')).toEqual({ k: 11, a: 1 })
-    await expect(seneca.post('x:1,a:2')).rejects.toThrow('not_allowed')
+    await expect(seneca.post('x:1,a:2')).rejects.toMatchObject({ code: 'not_allowed' })
   })
 
 })
